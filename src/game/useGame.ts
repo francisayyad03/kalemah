@@ -32,10 +32,12 @@ export function useGame() {
   }
 
   function submitGuess() {
+    console.log('Submitting guess:', currentGuess, currentGuess.length);
     if (status !== 'playing') return;
     if (currentGuess.length !== WORD_LENGTH) return;
 
     if (!isGuessAllowed(currentGuess, ALLOWED_WORDS)) {
+      alert('Word not in list');
       console.log('Guess not allowed:', currentGuess);
       return;
     }

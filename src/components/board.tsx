@@ -52,6 +52,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   row: {
-    flexDirection: 'row-reverse', // RTL layout
+    flexDirection: 'row-reverse',
   },
 });

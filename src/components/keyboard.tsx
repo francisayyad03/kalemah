@@ -5,18 +5,20 @@ interface KeyboardProps {
   onKey: (letter: string) => void;
   onEnter: () => void;
   onBackspace: () => void;
+  keyStates: Map<string, 'correct' | 'present' | 'absent'>;
 }
 
 const ROWS = [
   ['ض','ص','ث','ق','ف','غ','ع','ه','خ','ح','ج'],
-
   ['ش','س','ي','ب','ل','ا','ت','ن','م','ك','ة'],
   ['Enter','ء','ظ','ط','ذ','د','ز','ر','و','ى','⌫'],
 ];
+
 export function Keyboard({
   onKey,
   onEnter,
   onBackspace,
+  keyStates,
 }: KeyboardProps) {
   return (
     <View style={styles.keyboard}>
@@ -49,6 +51,7 @@ export function Keyboard({
               <Key
                 key={key}
                 label={key}
+                state={keyStates.get(key)}
                 onPress={() => onKey(key)}
               />
             );
@@ -63,7 +66,7 @@ const styles = StyleSheet.create({
   keyboard: {
     width: '100%',
     paddingHorizontal: 8,
-    marginTop: 24,
+    marginTop: 20,
   },
   row: {
     flexDirection: 'row',
