@@ -11,12 +11,30 @@ const WORD_LENGTH = 5;
 
 export type GameStatus = 'playing' | 'won' | 'lost';
 
+type Stats = {
+  gamesPlayed: number;
+  gamesWon: number;
+  currentStreak: number;
+  maxStreak: number;
+  guessDistribution: number[]; // length 6
+};
+
+const DEFAULT_STATS: Stats = {
+  gamesPlayed: 0,
+  gamesWon: 0,
+  currentStreak: 0,
+  maxStreak: 0,
+  guessDistribution: [0, 0, 0, 0, 0, 0],
+};
+
+
 export function useGame() {
   const [answer] = useState(getDailyWord);
   const [guesses, setGuesses] = useState<string[]>([]);
   const [results, setResults] = useState<TileResult[][]>([]);
   const [currentGuess, setCurrentGuess] = useState('');
   const [status, setStatus] = useState<GameStatus>('playing');
+  const [stats, setStats] = useState<Stats>(DEFAULT_STATS);
 
   function addLetter(letter: string) {
     if (status !== 'playing') return;
@@ -54,13 +72,34 @@ export function useGame() {
     setResults(nextResults);
     setCurrentGuess('');
 
-    if (currentGuess === answer) {
+    if (normalizedGuess === normalizedAnswer) {
       setStatus('won');
+      setStats(prev => {
+      const guessesUsed = guesses.length + 1; // this submitted guess
+      const dist = [...prev.guessDistribution];
+      if (guessesUsed >= 1 && guessesUsed <= 6) dist[guessesUsed - 1]++;
+
+      const currentStreak = prev.currentStreak + 1;
+
+      return {
+        ...prev,
+        gamesPlayed: prev.gamesPlayed + 1,
+        gamesWon: prev.gamesWon + 1,
+        currentStreak,
+        maxStreak: Math.max(prev.maxStreak, currentStreak),
+        guessDistribution: dist,
+      };
+    });
       return;
     }
 
     if (nextGuesses.length >= MAX_GUESSES) {
       setStatus('lost');
+      setStats(prev => ({
+      ...prev,
+      gamesPlayed: prev.gamesPlayed + 1,
+      currentStreak: 0,
+    }));
     }
   }
 
@@ -73,5 +112,6 @@ return {
   addLetter,
   removeLetter,
   submitGuess,
+  stats,
 };
 }
