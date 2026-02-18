@@ -4,7 +4,7 @@ import { isGuessAllowed } from './validator';
 import { getDailyWord } from './dailyword';
 import { TileResult } from './types';
 import { ALLOWED_WORDS } from '../data/allowed';
-import { normalizeHamza } from '../utils/arabic';
+import { normalizeArabic } from '../utils/arabic';
 
 const MAX_GUESSES = 6;
 const WORD_LENGTH = 5;
@@ -42,8 +42,8 @@ export function useGame() {
       return;
     }
 
-    const normalizedGuess = normalizeHamza(currentGuess);
-    const normalizedAnswer = normalizeHamza(answer);
+    const normalizedGuess = normalizeArabic(currentGuess);
+    const normalizedAnswer = normalizeArabic(answer);
 
     const evaluation = evaluateGuess(normalizedGuess, normalizedAnswer);
 

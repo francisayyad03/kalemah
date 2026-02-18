@@ -63,10 +63,13 @@ export function isValidArabicWord(word: string): boolean {
  * - Exactly 5 letters
  * - Arabic letters only
  */
+
+export function normalizeArabic(word: string): string {
+  return normalizeHamza(stripHarakat(word));
+}
+
 export function validateGuess(word: string): boolean {
-  const clean = normalizeHamza(stripHarakat(word));
-
+  const clean = normalizeArabic(word);
   if (clean.length !== 5) return false;
-
   return isValidArabicWord(clean);
 }

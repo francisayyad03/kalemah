@@ -1,5 +1,4 @@
-import { validateGuess } from '../utils/arabic';
-import { normalizeHamza } from '../utils/arabic';
+import { normalizeArabic, validateGuess } from '../utils/arabic';
 
 /**
  * Check whether a guess is valid:
@@ -15,5 +14,5 @@ export function isGuessAllowed(
     return false;
   }
 
-  return allowedWords.has(normalizeHamza(guess));
+  return allowedWords.has(normalizeArabic(guess));
 }
