@@ -9,14 +9,14 @@ interface TileProps {
 export function Tile({ letter = '', state }: TileProps) {
   const backgroundColor =
     state === 'correct'
-      ? '#538d4e' // green
+      ? '#42762C' // green
       : state === 'present'
-      ? '#b59f3b' // yellow
+      ? '#FED300' // yellow
       : state === 'absent'
-      ? '#3a3a3c' // gray
-      : '#121213'; // empty
+      ? '#C65D3B' // gray
+      : '#B8A89A'; // empty
 
-  const borderColor = letter ? '#565758' : '#3a3a3c';
+  const borderColor = letter ? '#565758' : '#3f3a34';
 
   return (
     <View style={[styles.tile, { backgroundColor, borderColor }]}>

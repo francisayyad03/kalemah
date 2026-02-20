@@ -10,30 +10,21 @@ interface Stats {
   lastWinDayId?: string | null;
 }
 
-interface GameOverModalProps {
+interface StatsModalProps {
   visible: boolean;
-  status: 'won' | 'lost';
-  answer: string;
   stats: Stats;
   onClose: () => void;
 }
 
-export function GameOverModal({
-  visible,
-  status,
-  answer,
-  stats,
-  onClose,
-}: GameOverModalProps) {
-  const isWin = status === 'won';
-
+export function StatsModal({ visible, stats, onClose }: StatsModalProps) {
   const safeStats = stats ?? {
     gamesPlayed: 0,
     gamesWon: 0,
     currentStreak: 0,
     maxStreak: 0,
     guessDistribution: [0, 0, 0, 0, 0, 0],
-  }
+  };
+
   const winPercent =
     safeStats.gamesPlayed === 0
       ? 0
@@ -41,17 +32,11 @@ export function GameOverModal({
 
   const maxDist = Math.max(...safeStats.guessDistribution, 1);
 
-
   return (
-    <Modal visible={visible} transparent animationType="fade">
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <View style={styles.overlay}>
         <View style={styles.modal}>
-          <Text style={styles.title}>
-            {isWin ? '🎉 فزت!' : '😔 انتهت اللعبة'}
-          </Text>
-
-          <Text style={styles.subtitle}>الكلمة كانت</Text>
-          <Text style={styles.answer}>{answer}</Text>
+          <Text style={styles.title}>إحصائياتك</Text>
 
           {/* ====== STATS SUMMARY ====== */}
           <View style={styles.statsRow}>
@@ -70,12 +55,7 @@ export function GameOverModal({
                 <View key={index} style={styles.distRow}>
                   <Text style={styles.distLabel}>{index + 1}</Text>
                   <View style={styles.barBackground}>
-                    <View
-                      style={[
-                        styles.barFill,
-                        { width: `${widthPercent}%` },
-                      ]}
-                    >
+                    <View style={[styles.barFill, { width: `${widthPercent}%` }]}>
                       <Text style={styles.barText}>{count}</Text>
                     </View>
                   </View>
@@ -120,19 +100,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 22,
     fontWeight: 'bold',
-    marginBottom: 12,
-  },
-  subtitle: {
-    color: '#aaa',
-    fontSize: 14,
-    marginBottom: 4,
-  },
-  answer: {
-    color: 'white',
-    fontSize: 26,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    letterSpacing: 2,
+    marginBottom: 16,
   },
 
   statsRow: {

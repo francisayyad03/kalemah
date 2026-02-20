@@ -10,11 +10,11 @@ interface KeyProps {
 export function Key({ label, onPress, wide, state }: KeyProps) {
   const backgroundColor =
     state === 'correct'
-      ? '#538d4e'
+      ? '#42762C'
       : state === 'present'
-      ? '#b59f3b'
+      ? '#FED300'
       : state === 'absent'
-      ? '#3a3a3c'
+      ? '#C65D3B'
       : '#818384';
 
   return (
