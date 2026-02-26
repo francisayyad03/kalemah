@@ -1,34 +1,35 @@
+// tile.tsx
 import { View, Text, StyleSheet } from 'react-native';
 import { TileState } from '../game/types';
 
 interface TileProps {
   letter?: string;
   state?: TileState;
+  size: number;
 }
 
-export function Tile({ letter = '', state }: TileProps) {
+export function Tile({ letter = '', state, size }: TileProps) {
   const backgroundColor =
     state === 'correct'
-      ? '#42762C' // green
+      ? '#42762C'
       : state === 'present'
-      ? '#FED300' // yellow
+      ? '#FED300'
       : state === 'absent'
-      ? '#C65D3B' // gray
-      : '#B8A89A'; // empty
+      ? '#C65D3B'
+      : '#B8A89A';
 
   const borderColor = letter ? '#565758' : '#3f3a34';
+  const fontSize = Math.round(size * 0.55);
 
   return (
-    <View style={[styles.tile, { backgroundColor, borderColor }]}>
-      <Text style={styles.letter}>{letter}</Text>
+    <View style={[styles.tile, { backgroundColor, borderColor, width: size, height: size }]}>
+      <Text style={[styles.letter, { fontSize }]}>{letter}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   tile: {
-    width: 60,
-    height: 60,
     margin: 4,
     borderWidth: 2,
     justifyContent: 'center',
@@ -36,7 +37,6 @@ const styles = StyleSheet.create({
   },
   letter: {
     color: 'white',
-    fontSize: 32,
     fontWeight: 'bold',
   },
 });

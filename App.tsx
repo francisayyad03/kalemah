@@ -1,4 +1,4 @@
-import { View, StyleSheet, Text, TouchableOpacity, Image } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, Image, useWindowDimensions } from 'react-native';
 import { useGame } from './src/game/useGame';
 import { Board } from './src/components/board';
 import { Keyboard } from './src/components/keyboard';
@@ -7,14 +7,43 @@ import { GameOverModal } from './src/components/GameOverModal';
 import { useState, useEffect, useRef } from 'react';
 import { StatsModal } from './src/components/statsModal';
 import { HelpModal } from './src/components/helpModal';
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+  SafeAreaProvider,
+} from 'react-native-safe-area-context';
 
 export default function App() {
+  return (
+    <SafeAreaProvider>
+      <AppInner />
+    </SafeAreaProvider>
+  );
+}
+
+function AppInner() {
   const game = useGame();
   const keyStates = getKeyboardState(game.results);
 
   const [showModal, setShowModal] = useState(true);
   const [showHelp, setShowHelp] = useState(false);
   const [showStats, setShowStats] = useState(false);
+
+  const insets = useSafeAreaInsets();
+  const { width, height } = useWindowDimensions();
+  const shortSide = Math.min(width, height);
+  const isTablet = shortSide >= 768;
+  const isSmallPhone = !isTablet && height <= 700;
+
+  const iconSize = isTablet ? 26 : isSmallPhone ? 20 : 22;
+  const titleSize = isTablet ? 34 : isSmallPhone ? 24 : 28;
+
+  const safeTop = isTablet ? insets.top : Math.min(insets.top, 20);
+  const headerTopPad = safeTop + (isSmallPhone ? 8 : 10);
+
+  const headerBottomPad = isTablet ? 14 : isSmallPhone ? 10 : 12;
+
+  const toastTop = headerTopPad + headerBottomPad + (isTablet ? 52 : 46);
 
   // ===== TOAST =====
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -38,26 +67,39 @@ export default function App() {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       {/* HEADER */}
-      <View style={styles.header}>
-        {/* Left icon: Help */}
-        <TouchableOpacity style={styles.headerIconLeft} onPress={() => setShowHelp(true)}>
-          <Image source={require('./src/media/question_mark.png')} style={styles.headerIconImage} />
-        </TouchableOpacity>
+      <View
+        style={[
+          styles.header,
+          {
+            paddingTop: headerTopPad,
+            paddingBottom: headerBottomPad,
+          },
+        ]}
+      >
+        <View style={styles.headerRow}>
+          <TouchableOpacity style={styles.iconButton} onPress={() => setShowHelp(true)}>
+            <Image
+              source={require('./src/media/question_mark.png')}
+              style={{ width: iconSize, height: iconSize }}
+            />
+          </TouchableOpacity>
 
-        {/* Center title/logo */}
-        <Text style={styles.title}>كلمة</Text>
+          <Text style={[styles.title, { fontSize: titleSize }]}>كلمة</Text>
 
-        {/* Right icon: Stats */}
-        <TouchableOpacity style={styles.headerIconRight} onPress={() => setShowStats(true)}>
-          <Image source={require('./src/media/stats.png')} style={styles.headerIconImage} />
-        </TouchableOpacity>
+          <TouchableOpacity style={styles.iconButton} onPress={() => setShowStats(true)}>
+            <Image
+              source={require('./src/media/stats.png')}
+              style={{ width: iconSize, height: iconSize }}
+            />
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* TOAST */}
       {toastMessage && (
-        <View style={styles.toast}>
+        <View style={[styles.toast, { top: toastTop }]}>
           <Text style={styles.toastText}>{toastMessage}</Text>
         </View>
       )}
@@ -72,7 +114,7 @@ export default function App() {
       </View>
 
       {/* KEYBOARD */}
-      <View style={styles.keyboardContainer}>
+      <View style={[styles.keyboardContainer, { paddingBottom: Math.max(insets.bottom, 12) }]}>
         <Keyboard
           onKey={game.addLetter}
           onEnter={() => {
@@ -101,12 +143,8 @@ export default function App() {
       <HelpModal visible={showHelp} onClose={() => setShowHelp(false)} />
 
       {/* STATS MODAL */}
-      <StatsModal
-        visible={showStats}
-        stats={game.stats}
-        onClose={() => setShowStats(false)}
-      />
-    </View>
+      <StatsModal visible={showStats} stats={game.stats} onClose={() => setShowStats(false)} />
+    </SafeAreaView>
   );
 }
 
@@ -117,45 +155,30 @@ const styles = StyleSheet.create({
   },
 
   header: {
-    paddingTop: 58,
-    paddingBottom: 18,
     borderBottomWidth: 4,
     borderBottomColor: '#3E5F3C',
-    justifyContent: 'center',
+  },
+
+  headerRow: {
+    width: '100%',
+    paddingHorizontal: 16,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
   },
 
-  headerIconLeft: {
-    position: 'absolute',
-    left: 16,
-    bottom: 12,
-    padding: 6,
-  },
-
-  headerIconRight: {
-    position: 'absolute',
-    right: 16,
-    bottom: 12,
-    padding: 6,
-  },
-
-  headerIconImage: {
-    width: 22,
-    height: 22,
-    borderRadius: 4,
+  iconButton: {
+    padding: 8,
   },
 
   title: {
     color: 'white',
-    fontSize: 28,
     fontWeight: 'bold',
     letterSpacing: 1,
   },
 
-  // ===== TOAST STYLES =====
   toast: {
     position: 'absolute',
-    top: 110, // below header
     alignSelf: 'center',
     backgroundColor: '#1f1f1f',
     borderWidth: 1,
@@ -180,7 +203,5 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
   },
 
-  keyboardContainer: {
-    paddingBottom: 16,
-  },
+  keyboardContainer: {},
 });

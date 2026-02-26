@@ -5,9 +5,10 @@ interface KeyProps {
   onPress: () => void;
   wide?: boolean;
   state?: 'correct' | 'present' | 'absent';
+  compact?: boolean;
 }
 
-export function Key({ label, onPress, wide, state }: KeyProps) {
+export function Key({ label, onPress, wide, state, compact }: KeyProps) {
   const backgroundColor =
     state === 'correct'
       ? '#42762C'
@@ -23,10 +24,11 @@ export function Key({ label, onPress, wide, state }: KeyProps) {
       style={[
         styles.key,
         wide && styles.wide,
+        compact && styles.compactKey,
         { backgroundColor },
       ]}
     >
-      <Text style={styles.text}>{label}</Text>
+      <Text style={[styles.text, compact && styles.compactText]}>{label}</Text>
     </Pressable>
   );
 }
@@ -40,6 +42,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  compactKey: {
+    paddingVertical: 12,
+    margin: 2,
+  },
   wide: {
     flex: 1.5,
   },
@@ -47,5 +53,8 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  compactText: {
+    fontSize: 14,
   },
 });
