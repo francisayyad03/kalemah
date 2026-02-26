@@ -1,4 +1,5 @@
-import { Modal, View, Text, StyleSheet, Pressable } from 'react-native';
+import { Modal, View, Text, StyleSheet, Pressable, Share } from 'react-native';
+import type { TileResult, TileState } from '../game/types'; // adjust path if needed
 
 interface Stats {
   gamesPlayed: number;
@@ -15,6 +16,7 @@ interface GameOverModalProps {
   status: 'won' | 'lost';
   answer: string;
   stats: Stats;
+  results: TileResult[][]; // ✅ add this
   onClose: () => void;
 }
 
@@ -23,6 +25,7 @@ export function GameOverModal({
   status,
   answer,
   stats,
+  results,
   onClose,
 }: GameOverModalProps) {
   const isWin = status === 'won';
@@ -33,7 +36,7 @@ export function GameOverModal({
     currentStreak: 0,
     maxStreak: 0,
     guessDistribution: [0, 0, 0, 0, 0, 0],
-  }
+  };
   const winPercent =
     safeStats.gamesPlayed === 0
       ? 0
@@ -41,6 +44,40 @@ export function GameOverModal({
 
   const maxDist = Math.max(...safeStats.guessDistribution, 1);
 
+  function stateToEmoji(state: TileState) {
+    if (state === 'correct') return '🟩';
+    if (state === 'present') return '🟨';
+    if (state === 'absent') return '🟥';
+    return '⬛';
+  }
+
+  function buildShareText() {
+    const guessesUsed = results?.length ?? 0;
+    const score = isWin ? `${guessesUsed}/6` : 'X/6';
+
+    const grid = (results ?? [])
+      .map(row =>
+      [...row]
+        .reverse()
+        .map(tile => stateToEmoji(tile.state))
+        .join('')
+      )
+      .join('\n'
+      )
+
+    const day = safeStats.lastCompletedDayId ? ` ${safeStats.lastCompletedDayId}` : '';
+
+    return `Kalemah${day} ${score}\n\n${grid}`;
+  }
+
+  async function onShare() {
+    try {
+      const message = buildShareText();
+      await Share.share({ message });
+    } catch (e) {
+      console.log('Share failed:', e);
+    }
+  }
 
   return (
     <Modal visible={visible} transparent animationType="fade">
@@ -65,17 +102,11 @@ export function GameOverModal({
           <View style={styles.distributionContainer}>
             {safeStats.guessDistribution.map((count, index) => {
               const widthPercent = (count / maxDist) * 100;
-
               return (
                 <View key={index} style={styles.distRow}>
                   <Text style={styles.distLabel}>{index + 1}</Text>
                   <View style={styles.barBackground}>
-                    <View
-                      style={[
-                        styles.barFill,
-                        { width: `${widthPercent}%` },
-                      ]}
-                    >
+                    <View style={[styles.barFill, { width: `${widthPercent}%` }]}>
                       <Text style={styles.barText}>{count}</Text>
                     </View>
                   </View>
@@ -84,9 +115,16 @@ export function GameOverModal({
             })}
           </View>
 
-          <Pressable onPress={onClose} style={styles.button}>
-            <Text style={styles.buttonText}>حسناً</Text>
-          </Pressable>
+          {/* ✅ Buttons */}
+          <View style={styles.buttonRow}>
+            <Pressable onPress={onShare} style={[styles.button, styles.shareButton]}>
+              <Text style={styles.buttonText}>مشاركة</Text>
+            </Pressable>
+
+            <Pressable onPress={onClose} style={[styles.button, styles.closeButton]}>
+              <Text style={styles.buttonText}>حسناً</Text>
+            </Pressable>
+          </View>
         </View>
       </View>
     </Modal>
@@ -188,11 +226,22 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 
+  buttonRow: {
+    flexDirection: 'row',
+    width: '100%',
+    gap: 10,
+  },
   button: {
-    backgroundColor: '#42762C',
+    flex: 1,
     paddingVertical: 10,
-    paddingHorizontal: 32,
     borderRadius: 6,
+    alignItems: 'center',
+  },
+  shareButton: {
+    backgroundColor: '#2E5AA7',
+  },
+  closeButton: {
+    backgroundColor: '#42762C',
   },
   buttonText: {
     color: 'white',

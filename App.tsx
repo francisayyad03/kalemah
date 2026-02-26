@@ -92,6 +92,7 @@ export default function App() {
           status={game.status}
           answer={game.answer}
           stats={game.stats}
+          results={game.results}
           onClose={() => setShowModal(false)}
         />
       )}
