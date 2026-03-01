@@ -17,11 +17,17 @@ import {
 import HelpIcon from './src/media/help.svg';
 import StatsIcon from './src/media/stats.svg';
 import KalemahLogo from './src/media/kalemah.svg';
+import { LoadingScreen } from './src/components/loadingScreen';
 
 export default function App() {
+  const [isReady, setIsReady] = useState(false);
   return (
     <SafeAreaProvider>
-      <AppInner />
+      {!isReady ? (
+        <LoadingScreen onFinish={() => setIsReady(true)} />
+      ) : (
+        <AppInner />
+      )}
     </SafeAreaProvider>
   );
 }
