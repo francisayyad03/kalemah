@@ -67,7 +67,7 @@ export function GameOverModal({
 
     const day = safeStats.lastCompletedDayId ? ` ${safeStats.lastCompletedDayId}` : '';
 
-    return `Kalemah${day} ${score}\n\n${grid}`;
+    return `Kalima${day} ${score}\n\n${grid}`;
   }
 
   async function onShare() {
