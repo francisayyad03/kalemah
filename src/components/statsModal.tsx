@@ -56,9 +56,11 @@ export function StatsModal({ visible, stats, onClose }: StatsModalProps) {
                 <View key={index} style={styles.distRow}>
                   <Text style={styles.distLabel}>{index + 1}</Text>
                   <View style={styles.barBackground}>
+                    {count > 0 && (
                     <View style={[styles.barFill, { width: `${widthPercent}%` }]}>
                       <Text style={styles.barText}>{count}</Text>
                     </View>
+                    )}
                   </View>
                 </View>
               );
