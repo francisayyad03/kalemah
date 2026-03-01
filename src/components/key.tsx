@@ -1,60 +1,74 @@
-import { Pressable, Text, StyleSheet } from 'react-native';
+import React from 'react';
+import { Pressable, Text, StyleSheet, ViewStyle } from 'react-native';
+import { COLORS } from '../utils/colors';
+
+export type KeyState = 'correct' | 'present' | 'absent';
 
 interface KeyProps {
   label: string;
   onPress: () => void;
-  wide?: boolean;
-  state?: 'correct' | 'present' | 'absent';
-  compact?: boolean;
+  state?: KeyState;
+  width: number;
+  height: number;
+  kind?: 'normal' | 'action';
+  fontSize?: number;
 }
 
-export function Key({ label, onPress, wide, state, compact }: KeyProps) {
+export function Key({
+  label,
+  onPress,
+  state,
+  width,
+  height,
+  kind = 'normal',
+  fontSize = 18,
+}: KeyProps) {
   const backgroundColor =
-    state === 'correct'
-      ? '#42762C'
-      : state === 'present'
-      ? '#FED300'
-      : state === 'absent'
-      ? '#C65D3B'
-      : '#818384';
+    state === 'correct' ? COLORS.green :
+    state === 'present' ? COLORS.yellow :
+    state === 'absent'  ? COLORS.grid  :
+    COLORS.lightGrey;
+
+  const fontWeight = state === 'absent' || state === 'present' ? '600' : '700';
+  const color = state === 'absent' ? COLORS.lightGrey : '#1B1B1B';
+
+  const borderRadius = Math.round(width * 0.28);
 
   return (
     <Pressable
       onPress={onPress}
-      style={[
-        styles.key,
-        wide && styles.wide,
-        compact && styles.compactKey,
-        { backgroundColor },
+      style={({ pressed }) => [
+        {
+          width,
+          height,
+          backgroundColor,
+          borderRadius,
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginHorizontal: 2.5,
+          marginVertical: 3,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.22,
+          shadowRadius: 3,
+          elevation: 3,
+          transform: [{ scale: pressed ? 0.95 : 1 }],
+          opacity: pressed ? 0.88 : 1,
+        } as ViewStyle,
       ]}
     >
-      <Text style={[styles.text, compact && styles.compactText]}>{label}</Text>
+      <Text
+        style={{
+          fontFamily: 'System',
+          fontSize,
+          fontWeight,
+          color,
+          includeFontPadding: false,
+          textAlignVertical: 'center',
+        }}
+      >
+        {label}
+      </Text>
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  key: {
-    flex: 1,
-    margin: 3,
-    paddingVertical: 18,
-    borderRadius: 4,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  compactKey: {
-    paddingVertical: 12,
-    margin: 2,
-  },
-  wide: {
-    flex: 1.5,
-  },
-  text: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  compactText: {
-    fontSize: 14,
-  },
-});

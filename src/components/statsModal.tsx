@@ -1,4 +1,5 @@
 import { Modal, View, Text, StyleSheet, Pressable } from 'react-native';
+import { COLORS } from '../utils/colors';
 
 interface Stats {
   gamesPlayed: number;
@@ -85,19 +86,19 @@ function StatBlock({ label, value }: { label: string; value: any }) {
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.6)',
+    backgroundColor: 'rgba(20, 18, 17, 0.95)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   modal: {
-    backgroundColor: '#1f1f1f',
+    backgroundColor: COLORS.charcoal,
     borderRadius: 12,
     padding: 24,
     width: '90%',
     alignItems: 'center',
   },
   title: {
-    color: 'white',
+    color: COLORS.lightGrey,
     fontSize: 22,
     fontWeight: 'bold',
     marginBottom: 16,
@@ -114,12 +115,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   statValue: {
-    color: 'white',
+    color: COLORS.lightGrey,
     fontSize: 18,
     fontWeight: 'bold',
   },
   statLabel: {
-    color: '#aaa',
+    color: COLORS.lightGrey,
     fontSize: 11,
     textAlign: 'center',
   },
@@ -134,36 +135,36 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   distLabel: {
-    color: 'white',
+    color: COLORS.lightGrey,
     width: 20,
   },
   barBackground: {
     flex: 1,
-    backgroundColor: '#333',
+    backgroundColor: 'rgba(218, 220, 224, 0.03)',
     height: 20,
     borderRadius: 4,
     overflow: 'hidden',
   },
   barFill: {
-    backgroundColor: '#42762C',
+    backgroundColor: COLORS.lightGrey,
     height: '100%',
     justifyContent: 'center',
     paddingHorizontal: 6,
   },
   barText: {
-    color: 'white',
+    color: COLORS.charcoal,
     fontSize: 12,
     fontWeight: 'bold',
   },
 
   button: {
-    backgroundColor: '#42762C',
+    backgroundColor: COLORS.lightGrey,
     paddingVertical: 10,
     paddingHorizontal: 32,
     borderRadius: 6,
   },
   buttonText: {
-    color: 'white',
+    color: COLORS.charcoal,
     fontSize: 16,
     fontWeight: 'bold',
   },

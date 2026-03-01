@@ -1,4 +1,5 @@
 import { Modal, View, Text, StyleSheet, Pressable } from 'react-native';
+import { COLORS } from '../utils/colors';
 
 interface HelpModalProps {
   visible: boolean;
@@ -20,7 +21,6 @@ export function HelpModal({ visible, onClose }: HelpModalProps) {
           <View style={styles.rules}>
             <Text style={styles.ruleLine}>🟩 الحرف صحيح وفي مكانه</Text>
             <Text style={styles.ruleLine}>🟨 الحرف موجود لكن بمكان آخر</Text>
-            <Text style={styles.ruleLine}>🟧 الحرف غير موجود</Text>
           </View>
 
           {/* ===== LANGUAGE NOTES ===== */}
@@ -29,7 +29,7 @@ export function HelpModal({ visible, onClose }: HelpModalProps) {
 
             <Text style={styles.noteText}>
                 • جميع أشكال الهمزة تعتبر حرفاً واحداً
-                (ء، أ، إ، آ، ؤ، ئ)
+                (ء، أ، إ، آ، ؤ، ئ) تُحسب كحرف واحد "ء".
             </Text>
 
             <Text style={styles.noteText}>
@@ -49,25 +49,25 @@ export function HelpModal({ visible, onClose }: HelpModalProps) {
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.6)',
+    backgroundColor: 'rgba(20, 18, 17, 0.95)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   modal: {
-    backgroundColor: '#1f1f1f',
+    backgroundColor: COLORS.charcoal,
     borderRadius: 12,
     padding: 24,
     width: '90%',
     alignItems: 'center',
   },
   title: {
-    color: 'white',
+    color: COLORS.lightGrey,
     fontSize: 22,
     fontWeight: 'bold',
     marginBottom: 12,
   },
   body: {
-    color: '#E8E6E3',
+    color: COLORS.lightGrey,
     fontSize: 15,
     marginBottom: 14,
     textAlign: 'center',
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
   },
   rules: {
     width: '100%',
-    backgroundColor: '#2B2B2B',
+    backgroundColor: COLORS.grid,
     borderRadius: 10,
     padding: 14,
     borderWidth: 1,
@@ -83,14 +83,14 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   ruleLine: {
-    color: '#E8E6E3',
+    color: COLORS.lightGrey,
     fontSize: 15,
     marginBottom: 8,
     textAlign: 'right',
   },
   notes: {
     width: '100%',
-    backgroundColor: '#252525',
+    backgroundColor: COLORS.grid,
     borderRadius: 10,
     padding: 14,
     borderWidth: 1,
@@ -98,27 +98,27 @@ const styles = StyleSheet.create({
     marginBottom: 18,
   },
   noteTitle: {
-    color: 'white',
+    color: COLORS.lightGrey,
     fontSize: 14,
     fontWeight: 'bold',
     marginBottom: 6,
     textAlign: 'right',
   },
   noteText: {
-    color: '#ccc',
+    color: COLORS.lightGrey,
     fontSize: 14,
     marginBottom: 6,
     textAlign: 'right',
     lineHeight: 20,
   },
   button: {
-    backgroundColor: '#3E5F3C',
+    backgroundColor: COLORS.lightGrey,
     paddingVertical: 10,
     paddingHorizontal: 32,
     borderRadius: 8,
   },
   buttonText: {
-    color: 'white',
+    color: COLORS.charcoal,
     fontSize: 16,
     fontWeight: 'bold',
   },

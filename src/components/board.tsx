@@ -20,7 +20,7 @@ export function Board({ guesses, results, currentGuess }: BoardProps) {
   const boardMaxWidth = width * (isTablet ? 0.75 : 0.92);
   const boardMaxHeight = height * (isTablet ? 0.62 : 0.50);
 
-  const gap = isTablet ? 10 : 6;
+  const gap = isTablet ? 10 : 1;
 
   const tileByWidth = Math.floor((boardMaxWidth - gap * (COLS - 1)) / COLS);
   const tileByHeight = Math.floor((boardMaxHeight - gap * (ROWS - 1)) / ROWS);
@@ -30,7 +30,7 @@ export function Board({ guesses, results, currentGuess }: BoardProps) {
   if (isTablet) {
     tileSize = Math.max(56, Math.min(tileSize, 90)); // iPad bigger
   } else {
-    tileSize = Math.max(44, Math.min(tileSize, 60));  // phones capped
+    tileSize = Math.max(40, Math.min(tileSize, 56));  // phones capped
   }
 
   const boardWidth = tileSize * COLS + gap * (COLS - 1);

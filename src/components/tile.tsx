@@ -1,6 +1,6 @@
-// tile.tsx
 import { View, Text, StyleSheet } from 'react-native';
 import { TileState } from '../game/types';
+import { COLORS } from '../utils/colors';
 
 interface TileProps {
   letter?: string;
@@ -11,19 +11,46 @@ interface TileProps {
 export function Tile({ letter = '', state, size }: TileProps) {
   const backgroundColor =
     state === 'correct'
-      ? '#42762C'
+      ? COLORS.green
       : state === 'present'
-      ? '#FED300'
-      : state === 'absent'
-      ? '#C65D3B'
-      : '#B8A89A';
-
-  const borderColor = letter ? '#565758' : '#3f3a34';
+      ? COLORS.yellow
+      : COLORS.grid;
   const fontSize = Math.round(size * 0.55);
 
+  let textColor = 'white';
+
+  if (state === 'correct' || state === 'present') {
+    textColor = 'black';
+  }
+
+  if (state === 'absent') {
+    textColor = COLORS.lightGrey;
+  }
+
+  const fontFamily =
+    state === 'correct' || state === 'present'
+      ? 'Roboto-ExtraBold'
+      : 'Roboto';
+
   return (
-    <View style={[styles.tile, { backgroundColor, borderColor, width: size, height: size }]}>
-      <Text style={[styles.letter, { fontSize }]}>{letter}</Text>
+    <View
+      style={[
+        styles.tile,
+        { backgroundColor, width: size, height: size },
+      ]}
+    >
+      <Text
+        style={[
+          styles.letter,
+          {
+            fontSize,
+            color: textColor,
+            fontFamily,
+          },
+        ]}
+      >
+        {letter}
+      </Text>
     </View>
   );
 }
@@ -31,12 +58,11 @@ export function Tile({ letter = '', state, size }: TileProps) {
 const styles = StyleSheet.create({
   tile: {
     margin: 4,
-    borderWidth: 2,
+    borderRadius: 15,
     justifyContent: 'center',
     alignItems: 'center',
   },
   letter: {
-    color: 'white',
     fontWeight: 'bold',
   },
 });

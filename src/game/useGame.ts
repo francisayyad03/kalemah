@@ -195,6 +195,6 @@ export function useGame() {
     removeLetter,
     submitGuess,
     stats,
-    dayId, // useful for debugging
+    dayId
   };
 }

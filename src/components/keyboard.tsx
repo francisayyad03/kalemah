@@ -1,48 +1,94 @@
+import React, { useMemo } from 'react';
 import { View, StyleSheet, useWindowDimensions } from 'react-native';
-import { Key } from './key';
+import { Key, KeyState } from './key';
 
 interface KeyboardProps {
   onKey: (letter: string) => void;
   onEnter: () => void;
   onBackspace: () => void;
-  keyStates: Map<string, 'correct' | 'present' | 'absent'>;
+  keyStates: Map<string, KeyState>;
 }
 
-const ROWS = [
-  ['ض','ص','ث','ق','ف','غ','ع','ه','خ','ح','ج'],
-  ['ش','س','ي','ب','ل','ا','ت','ن','م','ك','ة'],
-  ['Enter','ء','ظ','ط','ذ','د','ز','ر','و','ى', '⌫'],
+const ROWS: Array<Array<string>> = [
+  ['ض', 'ص', 'ث', 'ق', 'ف', 'غ', 'ع', 'ه', 'خ', 'ح', 'ج', '⌫'],
+  ['ش', 'س', 'ي', 'ب', 'ل', 'ا', 'ت', 'ن', 'م', 'ك', 'ة'],
+  ['ء', 'ظ', 'ط', 'ذ', 'د', 'ز', 'ر', 'و', 'ى', 'Enter'],
 ];
 
+const KEY_H_MARGIN = 2.5;
+const OUTER_PADDING = 6;
+const MAX_KEYS = 12;
+
 export function Keyboard({ onKey, onEnter, onBackspace, keyStates }: KeyboardProps) {
-  const { height, width } = useWindowDimensions();
-  const shortSide = Math.min(width, height);
-  const isTablet = shortSide >= 768;
-  const isSmallPhone = !isTablet && height <= 700;
+  const { width: screenWidth } = useWindowDimensions();
+  const isTablet = screenWidth >= 768;
+  const isLargePhone = !isTablet && screenWidth >= 390;
 
-  const compact = isSmallPhone;
+  const { keyWidth, keyHeight, fontSize } = useMemo(() => {
+    const isTablet = screenWidth >= 768;
+    const isLargePhone = !isTablet && screenWidth >= 390;
 
-  const topGap = isTablet ? 18 : isSmallPhone ? 6 : 12;
-  const rowGap = isTablet ? 6 : isSmallPhone ? 2 : 4;
+    const available = screenWidth - OUTER_PADDING * 2;
+
+    const totalMargins = MAX_KEYS * KEY_H_MARGIN * 2;
+    let w = Math.floor((available - totalMargins) / MAX_KEYS);
+
+    const minW = isTablet ? 42 : isLargePhone ? 26 : 24;
+    const maxW = isTablet ? 62 : isLargePhone ? 40 : 36;
+    w = Math.max(minW, Math.min(maxW, w));
+
+    const minH = isTablet ? 50 : isLargePhone ? 54 : 40;
+    const maxH = isTablet ? 64 : isLargePhone ? 68 : 50;
+    const h = Math.max(minH, Math.min(maxH, Math.round(w * 1.15)));
+
+    const fs = isTablet ? Math.round(w * 0.48) : Math.round(w * 0.55);
+    const clampedFs = Math.max(20, Math.min(26, fs));
+
+    return { keyWidth: w, keyHeight: h, fontSize: clampedFs };
+  }, [screenWidth]);
 
   return (
-    <View style={[styles.keyboard, { marginTop: topGap }]}>
+    <View style={[styles.outer, { paddingHorizontal: OUTER_PADDING, marginBottom: isLargePhone ? 24 : 0 }]}>
       {ROWS.map((row, i) => (
-        <View key={i} style={[styles.row, { marginVertical: rowGap / 2 }]}>
-          {row.map(key => {
-            if (key === 'Enter') {
-              return <Key key={key} label="↵" wide onPress={onEnter} compact={compact} />;
+        <View key={i} style={styles.row}>
+          {row.map((k) => {
+            if (k === 'Enter') {
+              return (
+                <Key
+                  key="Enter"
+                  label="↵"
+                  kind="action"
+                  width={keyWidth}
+                  height={keyHeight}
+                  fontSize={fontSize}
+                  onPress={onEnter}
+                />
+              );
             }
-            if (key === '⌫') {
-              return <Key key={key} label="⌫" wide onPress={onBackspace} compact={compact} />;
+
+            if (k === '⌫') {
+              return (
+                <Key
+                  key="backspace"
+                  label="⌫"
+                  kind="action"
+                  width={keyWidth}
+                  height={keyHeight}
+                  fontSize={fontSize}
+                  onPress={onBackspace}
+                />
+              );
             }
+
             return (
               <Key
-                key={key}
-                label={key}
-                state={keyStates.get(key)}
-                onPress={() => onKey(key)}
-                compact = {compact}
+                key={k}
+                label={k}
+                width={keyWidth}
+                height={keyHeight}
+                fontSize={fontSize}
+                state={keyStates.get(k)}
+                onPress={() => onKey(k)}
               />
             );
           })}
@@ -53,12 +99,14 @@ export function Keyboard({ onKey, onEnter, onBackspace, keyStates }: KeyboardPro
 }
 
 const styles = StyleSheet.create({
-  keyboard: {
+  outer: {
     width: '100%',
-    paddingHorizontal: 8,
+    alignItems: 'center',
+    paddingVertical: 6,
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'center',
+    alignItems: 'center',
   },
 });

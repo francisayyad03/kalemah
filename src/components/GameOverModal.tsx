@@ -1,12 +1,13 @@
 import { Modal, View, Text, StyleSheet, Pressable, Share } from 'react-native';
-import type { TileResult, TileState } from '../game/types'; // adjust path if needed
+import type { TileResult, TileState } from '../game/types';
+import { COLORS } from '../utils/colors';
 
 interface Stats {
   gamesPlayed: number;
   gamesWon: number;
   currentStreak: number;
   maxStreak: number;
-  guessDistribution: number[]; // length 6
+  guessDistribution: number[];
   lastCompletedDayId?: string | null;
   lastWinDayId?: string | null;
 }
@@ -16,7 +17,7 @@ interface GameOverModalProps {
   status: 'won' | 'lost';
   answer: string;
   stats: Stats;
-  results: TileResult[][]; // ✅ add this
+  results: TileResult[][];
   onClose: () => void;
 }
 
@@ -57,13 +58,12 @@ export function GameOverModal({
 
     const grid = (results ?? [])
       .map(row =>
-      [...row]
-        .reverse()
-        .map(tile => stateToEmoji(tile.state))
-        .join('')
+        [...row]
+          .reverse()
+          .map(tile => stateToEmoji(tile.state))
+          .join('')
       )
-      .join('\n'
-      )
+      .join('\n');
 
     const day = safeStats.lastCompletedDayId ? ` ${safeStats.lastCompletedDayId}` : '';
 
@@ -90,7 +90,7 @@ export function GameOverModal({
           <Text style={styles.subtitle}>الكلمة كانت</Text>
           <Text style={styles.answer}>{answer}</Text>
 
-          {/* ====== STATS SUMMARY ====== */}
+          {/* STATS SUMMARY */}
           <View style={styles.statsRow}>
             <StatBlock label="لعبت" value={safeStats.gamesPlayed} />
             <StatBlock label="نسبة الفوز" value={`${winPercent}%`} />
@@ -98,7 +98,7 @@ export function GameOverModal({
             <StatBlock label="أفضل سلسلة" value={safeStats.maxStreak} />
           </View>
 
-          {/* ====== DISTRIBUTION ====== */}
+          {/* DISTRIBUTION */}
           <View style={styles.distributionContainer}>
             {safeStats.guessDistribution.map((count, index) => {
               const widthPercent = (count / maxDist) * 100;
@@ -106,23 +106,25 @@ export function GameOverModal({
                 <View key={index} style={styles.distRow}>
                   <Text style={styles.distLabel}>{index + 1}</Text>
                   <View style={styles.barBackground}>
+                    {count > 0 && (
                     <View style={[styles.barFill, { width: `${widthPercent}%` }]}>
                       <Text style={styles.barText}>{count}</Text>
                     </View>
+                    )}
                   </View>
                 </View>
               );
             })}
           </View>
 
-          {/* ✅ Buttons */}
+          {/* BUTTONS */}
           <View style={styles.buttonRow}>
-            <Pressable onPress={onShare} style={[styles.button, styles.shareButton]}>
-              <Text style={styles.buttonText}>مشاركة</Text>
+            <Pressable onPress={onShare} style={styles.shareButton}>
+              <Text style={styles.shareButtonText}>مشاركة</Text>
             </Pressable>
 
-            <Pressable onPress={onClose} style={[styles.button, styles.closeButton]}>
-              <Text style={styles.buttonText}>حسناً</Text>
+            <Pressable onPress={onClose} style={styles.closeButton}>
+              <Text style={styles.closeButtonText}>حسناً</Text>
             </Pressable>
           </View>
         </View>
@@ -143,30 +145,30 @@ function StatBlock({ label, value }: { label: string; value: any }) {
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.6)',
+    backgroundColor: 'rgba(20, 18, 17, 0.95)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   modal: {
-    backgroundColor: '#1f1f1f',
+    backgroundColor: COLORS.charcoal,
     borderRadius: 12,
     padding: 24,
     width: '90%',
     alignItems: 'center',
   },
   title: {
-    color: 'white',
+    color: COLORS.lightGrey,
     fontSize: 22,
     fontWeight: 'bold',
     marginBottom: 12,
   },
   subtitle: {
-    color: '#aaa',
+    color: COLORS.lightGrey,
     fontSize: 14,
     marginBottom: 4,
   },
   answer: {
-    color: 'white',
+    color: COLORS.lightGrey,
     fontSize: 26,
     fontWeight: 'bold',
     marginBottom: 20,
@@ -184,12 +186,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   statValue: {
-    color: 'white',
+    color: COLORS.lightGrey,
     fontSize: 18,
     fontWeight: 'bold',
   },
   statLabel: {
-    color: '#aaa',
+    color: COLORS.lightGrey,
     fontSize: 11,
     textAlign: 'center',
   },
@@ -204,24 +206,24 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   distLabel: {
-    color: 'white',
+    color: COLORS.lightGrey,
     width: 20,
   },
   barBackground: {
     flex: 1,
-    backgroundColor: '#333',
+    backgroundColor: 'rgba(218, 220, 224, 0.03)',
     height: 20,
     borderRadius: 4,
     overflow: 'hidden',
   },
   barFill: {
-    backgroundColor: '#42762C',
+    backgroundColor: COLORS.lightGrey,
     height: '100%',
     justifyContent: 'center',
     paddingHorizontal: 6,
   },
   barText: {
-    color: 'white',
+    color: COLORS.charcoal,
     fontSize: 12,
     fontWeight: 'bold',
   },
@@ -231,20 +233,27 @@ const styles = StyleSheet.create({
     width: '100%',
     gap: 10,
   },
-  button: {
+  shareButton: {
     flex: 1,
     paddingVertical: 10,
     borderRadius: 6,
     alignItems: 'center',
+    backgroundColor: COLORS.grid,
   },
-  shareButton: {
-    backgroundColor: '#2E5AA7',
+  shareButtonText: {
+    color: COLORS.lightGrey,
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   closeButton: {
-    backgroundColor: '#42762C',
+    flex: 1,
+    paddingVertical: 10,
+    borderRadius: 6,
+    alignItems: 'center',
+    backgroundColor: COLORS.lightGrey,
   },
-  buttonText: {
-    color: 'white',
+  closeButtonText: {
+    color: COLORS.charcoal,
     fontSize: 16,
     fontWeight: 'bold',
   },

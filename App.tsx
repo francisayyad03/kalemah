@@ -1,4 +1,4 @@
-import { View, StyleSheet, Text, TouchableOpacity, Image, useWindowDimensions } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, useWindowDimensions } from 'react-native';
 import { useGame } from './src/game/useGame';
 import { Board } from './src/components/board';
 import { Keyboard } from './src/components/keyboard';
@@ -7,11 +7,16 @@ import { GameOverModal } from './src/components/GameOverModal';
 import { useState, useEffect, useRef } from 'react';
 import { StatsModal } from './src/components/statsModal';
 import { HelpModal } from './src/components/helpModal';
+import { COLORS } from './src/utils/colors';
 import {
   SafeAreaView,
   useSafeAreaInsets,
   SafeAreaProvider,
 } from 'react-native-safe-area-context';
+
+import HelpIcon from './src/media/help.svg';
+import StatsIcon from './src/media/stats.svg';
+import KalemahLogo from './src/media/kalemah.svg';
 
 export default function App() {
   return (
@@ -34,16 +39,35 @@ function AppInner() {
   const shortSide = Math.min(width, height);
   const isTablet = shortSide >= 768;
   const isSmallPhone = !isTablet && height <= 700;
+  const isLargePhone = !isTablet && !isSmallPhone;
 
-  const iconSize = isTablet ? 26 : isSmallPhone ? 20 : 22;
-  const titleSize = isTablet ? 34 : isSmallPhone ? 24 : 28;
+  const iconSize = isTablet ? 30 : isSmallPhone ? 20 : 22;
+
+  const ROWS = 6;
+  const COLS = 5;
+  const boardGap = isTablet ? 10 : 6;
+  const boardMaxWidth = width * (isTablet ? 0.75 : 0.92);
+  const boardMaxHeight = height * (isTablet ? 0.62 : 0.50);
+  const tileByWidth = Math.floor((boardMaxWidth - boardGap * (COLS - 1)) / COLS);
+  const tileByHeight = Math.floor((boardMaxHeight - boardGap * (ROWS - 1)) / ROWS);
+  let tileSize = Math.min(tileByWidth, tileByHeight);
+  tileSize = isTablet
+    ? Math.max(56, Math.min(tileSize, 90))
+    : Math.max(40, Math.min(tileSize, 56));
+  const headerWidth = tileSize * COLS + boardGap * (COLS - 1);
+
+  const pillPadV = isTablet ? 16 : 10;
+  const pillPadH = isTablet ? 22 : 14;
+  const circleSize = isTablet ? 48 : 36;
+  const circleRadius = circleSize / 2;
+  const logoWidth = isTablet ? 240 : isSmallPhone ? 130 : 150;
+  const logoHeight = isTablet ? 56 : 30;
 
   const safeTop = isTablet ? insets.top : Math.min(insets.top, 20);
-  const headerTopPad = safeTop + (isSmallPhone ? 8 : 10);
+  const headerTopPad = safeTop + (isSmallPhone ? 8 : isLargePhone ? 0 : 10);
+  const boardTopPad = isSmallPhone ? 0 : isLargePhone ? 4 : 10;
 
-  const headerBottomPad = isTablet ? 14 : isSmallPhone ? 10 : 12;
-
-  const toastTop = headerTopPad + headerBottomPad + (isTablet ? 52 : 46);
+  const boardBottomPad = isLargePhone ? 20 : 8;
 
   // ===== TOAST =====
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -69,43 +93,54 @@ function AppInner() {
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       {/* HEADER */}
-      <View
-        style={[
-          styles.header,
-          {
-            paddingTop: headerTopPad,
-            paddingBottom: headerBottomPad,
-          },
-        ]}
-      >
-        <View style={styles.headerRow}>
-          <TouchableOpacity style={styles.iconButton} onPress={() => setShowHelp(true)}>
-            <Image
-              source={require('./src/media/question_mark.png')}
-              style={{ width: iconSize, height: iconSize }}
-            />
+      <View style={[styles.headerWrap, { paddingTop: headerTopPad }]}>
+        <View
+          style={[
+            styles.headerPill,
+            {
+              width: headerWidth,
+              paddingVertical: pillPadV,
+              paddingHorizontal: pillPadH,
+            },
+          ]}
+        >
+          <TouchableOpacity
+            style={[
+              styles.circleButton,
+              { width: circleSize, height: circleSize, borderRadius: circleRadius },
+            ]}
+            onPress={() => setShowHelp(true)}
+            activeOpacity={0.8}
+          >
+            <HelpIcon width={iconSize} height={iconSize} />
           </TouchableOpacity>
 
-          <Text style={[styles.title, { fontSize: titleSize }]}>كلمة</Text>
+          <View style={styles.logoWrap}>
+            <KalemahLogo width={logoWidth} height={logoHeight} />
+          </View>
 
-          <TouchableOpacity style={styles.iconButton} onPress={() => setShowStats(true)}>
-            <Image
-              source={require('./src/media/stats.png')}
-              style={{ width: iconSize, height: iconSize }}
-            />
+          <TouchableOpacity
+            style={[
+              styles.circleButton,
+              { width: circleSize, height: circleSize, borderRadius: circleRadius },
+            ]}
+            onPress={() => setShowStats(true)}
+            activeOpacity={0.8}
+          >
+            <StatsIcon width={iconSize} height={iconSize} />
           </TouchableOpacity>
         </View>
       </View>
 
       {/* TOAST */}
       {toastMessage && (
-        <View style={[styles.toast, { top: toastTop }]}>
+        <View style={styles.toast}>
           <Text style={styles.toastText}>{toastMessage}</Text>
         </View>
       )}
 
       {/* BOARD */}
-      <View style={styles.boardContainer}>
+      <View style={[styles.boardContainer, { paddingTop: boardTopPad, paddingBottom: boardBottomPad }]}>
         <Board
           guesses={game.guesses}
           results={game.results}
@@ -151,34 +186,48 @@ function AppInner() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#2C2A28',
+    backgroundColor: COLORS.charcoal,
   },
 
-  header: {
-    borderBottomWidth: 4,
-    borderBottomColor: '#3E5F3C',
-  },
-
-  headerRow: {
+  // ===== HEADER =====
+  headerWrap: {
     width: '100%',
-    paddingHorizontal: 16,
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+
+  headerPill: {
+    borderRadius: 15,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    backgroundColor: 'rgba(218, 220, 224, 0.03)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.22,
+    shadowRadius: 6,
+    elevation: 3,
   },
 
-  iconButton: {
-    padding: 8,
+  circleButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 
-  title: {
-    color: 'white',
-    fontWeight: 'bold',
-    letterSpacing: 1,
+  logoWrap: {
+    flex: 1,
+    alignItems: 'center',
   },
 
+  // ===== TOAST =====
   toast: {
     position: 'absolute',
+    top: 110,
     alignSelf: 'center',
     backgroundColor: '#1f1f1f',
     borderWidth: 1,
@@ -196,11 +245,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
+  // ===== LAYOUT =====
   boardContainer: {
     flex: 1,
     justifyContent: 'center',
-    paddingTop: 8,
-    paddingBottom: 8,
   },
 
   keyboardContainer: {},
